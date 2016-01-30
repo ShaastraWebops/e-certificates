@@ -68,7 +68,7 @@
         var text_body = "PFA your e-certificate";
         fs.readFile('pdfs/page.pdf',function(err,data){
             var params = {
-              to: 'minuapple@gmail.com',
+              to: data[i].email,
               from: 'support@shaastra.org',
               fromname: 'Shaastra WebOps',
               subject: 'Welcome to Shaastra 2016',
