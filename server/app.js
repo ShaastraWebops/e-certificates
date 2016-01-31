@@ -10,6 +10,9 @@
     var api_key = '';
     var sendgrid = require('sendgrid')(api_key);
 
+    var contents = fs.readFileSync("./uploads/output.json");
+    var data = JSON.parse(contents);
+
     app.use(function(req, res, next) { //allow cross origin requests
         res.setHeader("Access-Control-Allow-Methods", "POST, PUT, OPTIONS, DELETE, GET");
         res.header("Access-Control-Allow-Origin", "http://localhost");
@@ -47,11 +50,10 @@
         });
     });
 
-    var data;
 
-    for(int i=0; i<data.length; i++){
+    for(var i=0; i<data.length; i++){
 
-    var dummyContent = '<!DOCTYPE html><html><head><title></title></head><body><img style="width:100%" src="../uploads/winnerscertificate.jpg"><h3 style="position:absolute;top:42.5%;left:35%">' + data[i].name + " " + data[i].secondName +'</h3><h3 style="position:absolute;top:47%;left:32%">' + data[i].college + '</h3><h3 style="position:absolute;top:51.5%;left:45%">' + data[i].event + '</h3></body></html>';
+    var dummyContent = '<!DOCTYPE html><html><head><title></title></head><body><img style="width:100%" src="../uploads/winnerscertificate.jpg"><h3 style="position:absolute;top:42.5%;left:35%">' + data[i].name + " " + data[i].lastName +'</h3><h3 style="position:absolute;top:47%;left:32%">' + data[i].college + '</h3><h3 style="position:absolute;top:51.5%;left:45%">' + data[i].event + '</h3></body></html>';
     // var dummyContent = '<!DOCTYPE html><html><head><title></title></head><body><img style="width:100%" src="../uploads/winnerscertificate.jpg"><h3 style="position:absolute;top:42.5%;left:35%">Howard</h3><h3 style="position:absolute;top:47%;left:32%">IIT Madras</h3></body></html>';
     var htmlFileName = "htmls/page.html", pdfFileName = "pdfs/page.pdf";
     
@@ -83,7 +85,7 @@
         });
     });
 
-    console.log('Rendered to ' + htmlFileName + ' and ' + pdfFileName + '\n');
+     console.log('Rendered to ' + htmlFileName + ' and ' + pdfFileName + '\n');
 
     }
     
