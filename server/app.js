@@ -57,10 +57,12 @@
         // Convert HTML to PDF with wkhtmltopdf
         console.log("Come" + i);
         var modifiedFirstName = data[i].name.replace(/[^a-zA-Z0-9]/g, '');
+        var destinationEmail = data[i].email;
         var text_body = "PFA your e-certificate";  
         fs.readFile('pdfs/'+ modifiedFirstName +'.pdf',function(err,data){
+                console.log(destinationEmail);
                 var params = {
-                    to: data[i].email,
+                    to: destinationEmail,
                     from: 'support@shaastra.org',
                     fromname: 'Shaastra WebOps',
                     subject: 'Welcome to Shaastra 2016',
