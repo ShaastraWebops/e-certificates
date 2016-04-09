@@ -9,6 +9,8 @@
     var fs = require('fs');
     var api_key = '';
     var sendgrid = require('sendgrid')(api_key);
+    var nodemailer = require('nodemailer');
+    var sleep = require('sleep');
 
     var contents = fs.readFileSync("./uploads/output.json");
     var data = JSON.parse(contents);
@@ -51,41 +53,61 @@
     });
 
 
-    for(var i=0; i<data.length; i++){
-
-    var dummyContent = '<!DOCTYPE html><html><head><title></title></head><body><img style="width:100%" src="../uploads/participation.jpg"><h3 style="position:absolute;top:42.5%;left:35%">' + data[i].name + " " + data[i].lastName +'</h3><h3 style="position:absolute;top:47%;left:32%">' + data[i].college + '</h3><h3 style="position:absolute;top:51.5%;left:45%">' + data[i].event + '</h3></body></html>';
-    // var dummyContent = '<!DOCTYPE html><html><head><title></title></head><body><img style="width:100%" src="../uploads/winnerscertificate.jpg"><h3 style="position:absolute;top:42.5%;left:35%">Howard</h3><h3 style="position:absolute;top:47%;left:32%">IIT Madras</h3></body></html>';
-    var htmlFileName = "htmls/page.html", pdfFileName = "pdfs/page.pdf";
-    
-    // Save to HTML file
-    fs.writeFile(htmlFileName, dummyContent, function(err) {
-        if(err) { throw err; }
-        util.log("file saved to site.html");
-    });
-    
-    // Convert HTML to PDF with wkhtmltopdf
-    var child = exec("wkhtmltopdf " + htmlFileName + " " + pdfFileName, function(err, stdout, stderr) {
-        if(err) { throw err; }
-        util.log(stderr);
-        var text_body = "PFA your e-certificate";
-        fs.readFile('pdfs/page.pdf',function(err,data){
-            var params = {
-              to: data[i].email,
-              from: 'support@shaastra.org',
-              fromname: 'Shaastra WebOps',
-              subject: 'Welcome to Shaastra 2016',
-              text: text_body,
-              files: [{filename: 'e-certificate.pdf', content: data}]
-            };
-            var email = new sendgrid.Email(params);
-            sendgrid.send(email, function (err, json) {
-              console.log('Error sending mail - ', err);
-              console.log('Success sending mail - ', json);
+    function sendEmail(i){
+        // Convert HTML to PDF with wkhtmltopdf
+        console.log("Come" + i);
+        var modifiedFirstName = data[i].name.replace(/[^a-zA-Z0-9]/g, '');
+        var destinationEmail = data[i].email;
+        var text_body = "PFA your e-certificate";  
+        fs.readFile('pdfs/'+ modifiedFirstName +'.pdf',function(err,data){
+                console.log(destinationEmail);
+                var params = {
+                    to: destinationEmail,
+                    from: 'support@shaastra.org',
+                    fromname: 'Shaastra WebOps',
+                    subject: 'Welcome to Shaastra 2016',
+                    text: text_body,
+                    files: [{filename: 'e-certificate.pdf', content: data}]
+                };
+                var email = new sendgrid.Email(params);
+                sendgrid.send(email, function (err, json) {
+                    console.log('Error sending mail - ', err);
+                    console.log('Success sending mail - ', json);
+                });
             });
-        });
-    });
 
-     console.log('Rendered to ' + htmlFileName + ' and ' + pdfFileName + '\n');
+    }
+
+
+    function pdfConvert(i){
+        console.log(i);
+        var dummyContent = '<!DOCTYPE html><html><head><title></title></head><body><img style="width:100%" src="../uploads/participation.jpg"><h3 style="position:absolute;top:42.5%;left:35%">' + data[i].name + " " + data[i].lastName +'</h3><h3 style="position:absolute;top:47%;left:32%">' + data[i].college + '</h3><h3 style="position:absolute;top:51.5%;left:45%">' + data[i].event + '</h3></body></html>';
+        // var dummyContent = '<!DOCTYPE html><html><head><title></title></head><body><img style="width:100%" src="../uploads/winnerscertificate.jpg"><h3 style="position:absolute;top:42.5%;left:35%">Howard</h3><h3 style="position:absolute;top:47%;left:32%">IIT Madras</h3></body></html>';
+        var modifiedFirstName = data[i].name.replace(/[^a-zA-Z0-9]/g, '');
+        var htmlFileName = "htmls/"+ modifiedFirstName +".html", pdfFileName = "pdfs/"+ modifiedFirstName +".pdf";
+    
+        // Save to HTML file
+        fs.writeFile(htmlFileName, dummyContent, function(err) {
+            console.log("Came" + i);
+            if(err) { throw err; }
+            util.log("file saved to site.html");
+
+            var child = exec("wkhtmltopdf " + htmlFileName + " " + pdfFileName, function(err, stdout, stderr) {
+                if(err) { throw err; }
+                util.log(stderr);
+                console.log("Came 2" + i);
+                sendEmail(i);
+            });
+            
+        });
+    
+        
+
+        console.log('Rendered to ' + htmlFileName + ' and ' + pdfFileName + '\n');
+    }
+
+    for(var i=0; i<data.length; i++){
+        pdfConvert(i);
 
     }
     
