@@ -7,7 +7,7 @@
     var exec = require('child_process').exec;
     var util = require('util');
     var fs = require('fs');
-    var api_key = '';
+    var api_key = 'SG._IAG365zTxCzun8CbCBkIg.tjjeTa87Ih67l_G6uAPB7Giubq7US916qPnzH7M6vUU';
     var sendgrid = require('sendgrid')(api_key);
     var nodemailer = require('nodemailer');
     var sleep = require('sleep');
@@ -58,14 +58,14 @@
         console.log("Come" + i);
         var modifiedFirstName = data[i].name.replace(/[^a-zA-Z0-9]/g, '');
         var destinationEmail = data[i].email;
-        var text_body = "PFA your e-certificate";  
+        var text_body = "Thank you for attending Shaastra. PFA your e-certificate.";  
         fs.readFile('pdfs/'+ modifiedFirstName +'.pdf',function(err,data){
                 console.log(destinationEmail);
                 var params = {
                     to: destinationEmail,
                     from: 'support@shaastra.org',
-                    fromname: 'Shaastra WebOps',
-                    subject: 'Welcome to Shaastra 2016',
+                    fromname: 'Shaastra Outreach',
+                    subject: 'Shaastra 2016 || E-certificate',
                     text: text_body,
                     files: [{filename: 'e-certificate.pdf', content: data}]
                 };
@@ -81,7 +81,7 @@
 
     function pdfConvert(i){
         console.log(i);
-        var dummyContent = '<!DOCTYPE html><html><head><title></title></head><body><img style="width:100%" src="../uploads/participation.jpg"><h3 style="position:absolute;top:42.5%;left:35%">' + data[i].name + " " + data[i].lastName +'</h3><h3 style="position:absolute;top:47%;left:32%">' + data[i].college + '</h3><h3 style="position:absolute;top:51.5%;left:45%">' + data[i].event + '</h3></body></html>';
+        var dummyContent = '<!DOCTYPE html><html><head><title></title></head><body><img style="width:100%" src="../uploads/participation.jpg"><h3 style="position:absolute;top:42.5%;left:35%">' + data[i].name + '</h3><h3 style="position:absolute;top:47%;left:32%">' + data[i].college + '</h3><h3 style="position:absolute;top:51.5%;left:45%">' + data[i].event + '</h3></body></html>';
         // var dummyContent = '<!DOCTYPE html><html><head><title></title></head><body><img style="width:100%" src="../uploads/winnerscertificate.jpg"><h3 style="position:absolute;top:42.5%;left:35%">Howard</h3><h3 style="position:absolute;top:47%;left:32%">IIT Madras</h3></body></html>';
         var modifiedFirstName = data[i].name.replace(/[^a-zA-Z0-9]/g, '');
         var htmlFileName = "htmls/"+ modifiedFirstName +".html", pdfFileName = "pdfs/"+ modifiedFirstName +".pdf";
